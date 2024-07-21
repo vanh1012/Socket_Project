@@ -53,6 +53,8 @@ def main():
 
     downloaded_files = set()
     input_file_path = "input.txt"
+    output_directory = Path("output")
+    output_directory.mkdir(exist_ok=True)
 
     try:
         while True:
@@ -62,7 +64,10 @@ def main():
             if os.path.exists(input_file_path):
                 with open(input_file_path, "r") as file_list:
                     current_files = {line.strip() for line in file_list}
-            
+
+                # Check if files are already downloaded
+                current_files -= {f.name for f in output_directory.iterdir() if f.is_file()}
+
                 # Find new files that need to be downloaded
                 new_files = current_files - downloaded_files
 
