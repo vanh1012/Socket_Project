@@ -1,6 +1,7 @@
 import socket
 import os
 
+
 def handle_client(conn, addr):
     print(f"Connected by {addr}")
     try:
@@ -9,10 +10,22 @@ def handle_client(conn, addr):
         if not files:
             conn.sendall(b"ERROR: No files available for download")
             return
+
+        # Create the list of files with their sizes
+        files_list = []
+        for file in files:
+            file_size = os.path.getsize(os.path.join('shared_files', file))
+            # Convert file size to a readable format (KB, MB, etc.)
+            for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
+                if file_size < 1024.0:
+                    size_str = f"{file_size:.1f}{unit}"
+                    break
+                file_size /= 1024.0
+            files_list.append(f"{file} {size_str}")
         
         # Send the list of files to the client
-        files_list = "\n".join(files)
-        conn.sendall(files_list.encode('utf8'))
+        files_list_str = "\n".join(files_list)
+        conn.sendall(files_list_str.encode('utf8'))
         
         while True:
             file_name = conn.recv(1024).decode()
@@ -45,9 +58,9 @@ def main():
     os.makedirs('shared_files', exist_ok=True)
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.bind((socket.gethostname(), 22222))
+    sock.bind(("127.0.0.1", 22222))
     sock.listen(5)
-    print("Host Name: ", sock.getsockname())
+    print(f"Server listening on 127.0.0.1:22222")
 
     try:
         while True:
