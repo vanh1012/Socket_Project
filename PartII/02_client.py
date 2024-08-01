@@ -189,6 +189,8 @@ def multi_download(client_socket, files_list):
     chat_display.insert(tk.END, f"[CLIENT] Available files from the server:\n{files_list}")
     chat_display.config(state=tk.DISABLED)
 
+
+
 def connect_to_server():
     global chat_display, host_entry, root
 
@@ -202,8 +204,7 @@ def connect_to_server():
         update_chat_display(f"[CLIENT] Available files from the server:\n{files_list}")
 
         # Handle connection in a separate thread
-        handle_thread = threading.Thread(target=handle, args=(client_socket, files_list), daemon=True)
-        handle_thread.start()
+        handle(client_socket, files_list)
     except Exception as e:
         update_chat_display(f"[CLIENT] Unable to connect to {host}: {e}\n")
     finally:
@@ -232,6 +233,7 @@ def main():
     chat_display.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
 
     root.mainloop()
+
 
 if __name__ == "__main__":
     main()
